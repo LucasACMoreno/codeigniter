@@ -1,0 +1,325 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema seguradora
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema seguradora
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS seguradora DEFAULT CHARACTER SET utf8 ;
+USE seguradora ;
+
+-- -----------------------------------------------------
+-- Table seguradora.estado
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.estado (
+  idestado INT AUTO_INCREMENT NOT NULL,
+  nome VARCHAR(45) NULL,
+  sigla VARCHAR(2) NULL,
+  PRIMARY KEY (idestado))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.cidade
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.cidade (
+  idcidade INT AUTO_INCREMENT NOT NULL,
+  estado INT NULL,
+  nome VARCHAR(100) NULL,
+  cep VARCHAR(12) NULL,
+  PRIMARY KEY (idcidade),
+  CONSTRAINT fk_cidade_estado
+    FOREIGN KEY (estado)
+    REFERENCES seguradora.estado (idestado)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.cliente
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.cliente (
+  idcliente INT AUTO_INCREMENT NOT NULL,
+  nome VARCHAR(150) NULL,
+  cpf_cnpj VARCHAR(20) NULL,
+  rg_insc VARCHAR(30) NULL,
+  email VARCHAR(150) NULL,
+  PRIMARY KEY (idcliente))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.parentesco
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.parentesco (
+  idparentesco INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(45) NULL,
+  PRIMARY KEY (idparentesco))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.condutor
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.condutor (
+  idcondutor INT AUTO_INCREMENT NOT NULL,
+  cliente INT NULL,
+  nome VARCHAR(150) NULL,
+  dtnascimento DATE NULL,
+  deficiente VARCHAR(1) NULL,
+  defdescricao VARCHAR(150) NULL,
+  sexo VARCHAR(1) NULL,
+  grauparentesco INT NULL,
+  PRIMARY KEY (idcondutor),
+  CONSTRAINT fk_cliente_condutor
+    FOREIGN KEY (cliente)
+    REFERENCES seguradora.cliente (idcliente)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_parentesco_condutor
+    FOREIGN KEY (grauparentesco)
+    REFERENCES seguradora.parentesco (idparentesco)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.tipoendereco
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.tipoendereco (
+  idtipoendereco INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(45) NULL,
+  PRIMARY KEY (idtipoendereco))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.endereco
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.endereco (
+  idendereco INT AUTO_INCREMENT NOT NULL,
+  tipoendereco INT NULL,
+  endereco VARCHAR(200) NULL,
+  numero VARCHAR(20) NULL,
+  complemento VARCHAR(40) NULL,
+  bairro VARCHAR(45) NULL,
+  cep VARCHAR(12) NULL,
+  cidade INT NULL,
+  cliente INT NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idendereco),
+  CONSTRAINT fk_endereco_cidade
+    FOREIGN KEY (cidade)
+    REFERENCES seguradora.cidade (idcidade)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_endereco_tipo
+    FOREIGN KEY (tipoendereco)
+    REFERENCES seguradora.tipoendereco (idtipoendereco)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_cliente_endereco
+    FOREIGN KEY (cliente)
+    REFERENCES seguradora.cliente (idcliente)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.tipotelefone
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.tipotelefone (
+  idtipotelefone INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(45) NULL,
+  PRIMARY KEY (idtipotelefone))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.telefone
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.telefone (
+  idtelefone INT AUTO_INCREMENT NOT NULL,
+  cliente INT NULL,
+  ddd VARCHAR(3) NULL,
+  numero VARCHAR(10) NULL,
+  tipotelefone INT NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idtelefone),
+  CONSTRAINT fk_cliente_telefone
+    FOREIGN KEY (cliente)
+    REFERENCES seguradora.cliente (idcliente)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_tipo_telefone
+    FOREIGN KEY (tipotelefone)
+    REFERENCES seguradora.tipotelefone (idtipotelefone)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.cobertura
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.cobertura (
+  idcobertura INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(150) NULL,
+  PRIMARY KEY (idcobertura))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.veiculomarca
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.veiculomarca (
+  idveiculomarca INT AUTO_INCREMENT NOT NULL,
+  marca VARCHAR(45) NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idveiculomarca))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.veiculotipo
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.veiculotipo (
+  idveiculotipo INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(45) NULL,
+  PRIMARY KEY (idveiculotipo))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.veiculomodelo
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.veiculomodelo (
+  idmodelo INT AUTO_INCREMENT NOT NULL,
+  marca INT NULL,
+  tipo INT NULL,
+  modelo VARCHAR(45) NULL,
+  codigo_fipe VARCHAR(45) NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idmodelo),
+  CONSTRAINT fk_modelo_marca
+    FOREIGN KEY (marca)
+    REFERENCES seguradora.veiculomarca (idveiculomarca)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_veiuclo_tipo
+    FOREIGN KEY (tipo)
+    REFERENCES seguradora.veiculotipo (idveiculotipo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.veiculo
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.veiculo (
+  idveiculo INT AUTO_INCREMENT NOT NULL,
+  modelo INT NULL,
+  cidade INT NULL,
+  anomodelo INT NULL,
+  anofabicacao INT NULL,
+  placa VARCHAR(8) NULL,
+  chassis VARCHAR(45) NULL,
+  renavan VARCHAR(45) NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idveiculo),
+  CONSTRAINT fk_veiculo_modelo
+    FOREIGN KEY (modelo)
+    REFERENCES seguradora.veiculomodelo (idmodelo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_veiculo_cidade
+    FOREIGN KEY (cidade)
+    REFERENCES seguradora.cidade (idcidade)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.apolice
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.apolice (
+  idapolice INT AUTO_INCREMENT NOT NULL,
+  cobertura INT NULL,
+  cliente INT NULL,
+  dtinicio DATE NULL,
+  dtfim DATE NULL,
+  franquia DECIMAL(10,2) NULL,
+  casco DECIMAL(3) NULL,
+  carroceria DECIMAL(10,2) NULL,
+  danos_materiais DECIMAL(10,2) NULL,
+  danos_corporais DECIMAL(10,2) NULL,
+  morte DECIMAL(10,2) NULL,
+  invalidez DECIMAL(10,2) NULL,
+  veiculo INT NULL,
+  PRIMARY KEY (idapolice),
+  CONSTRAINT fk_apolice_cobertura
+    FOREIGN KEY (cobertura)
+    REFERENCES seguradora.cobertura (idcobertura)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_apolice_cliente
+    FOREIGN KEY (cliente)
+    REFERENCES seguradora.cliente (idcliente)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_apolice_veiculo
+    FOREIGN KEY (veiculo)
+    REFERENCES seguradora.veiculo (idveiculo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.beneficios
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.beneficios (
+  idbeneficios INT AUTO_INCREMENT NOT NULL,
+  descricao VARCHAR(100) NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idbeneficios))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table seguradora.apolicebeneficios
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS seguradora.apolicebeneficios (
+  idapolicebeneficios INT AUTO_INCREMENT NOT NULL,
+  apolice INT NULL,
+  beneficio INT NULL,
+  valor DECIMAL(10,2) NULL,
+  ativo INT NULL,
+  PRIMARY KEY (idapolicebeneficios),
+  CONSTRAINT fk_apolice_beneficio
+    FOREIGN KEY (apolice)
+    REFERENCES seguradora.apolice (idapolice)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_beneficio_beneficio
+    FOREIGN KEY (idapolicebeneficios)
+    REFERENCES seguradora.beneficios (idbeneficios)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
