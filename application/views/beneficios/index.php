@@ -13,7 +13,7 @@
 					echo "<tr>" .
 							"<td>" . $linha->idbeneficios . "</td>" . 
 							"<td>" . $linha->descricao . "</td>" . 
-							"<td>" . $linha->ativo . "</td>" . 
+							"<td>" . ($linha->ativo ? 'Ativo' : 'Inativo') . "</td>" . 
 							"<td>
 								<a href='/eng3/index.php/beneficios/NovoEditar/$linha->idbeneficios' class='btn btn-warning'>EDITAR</a>
 								<a href='/eng3/index.php/beneficios/NovoExcluir/$linha->idbeneficios' class='btn btn-danger'>EXCLUIR</a>
